@@ -1,0 +1,10 @@
+services:
+  sandbox-image:
+    build:
+      context: ./sandbox
+      dockerfile: Dockerfile
+    image: deep-agents-sandbox:local
+    command: ["true"]
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
