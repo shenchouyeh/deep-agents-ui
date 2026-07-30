@@ -1,0 +1,4 @@
+deepagents
+langchain-openai
+langgraph-cli[inmem]
+python-dotenv
