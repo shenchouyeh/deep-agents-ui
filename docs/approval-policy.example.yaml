@@ -1,0 +1,21 @@
+version: 1
+default: allow
+rules:
+  - id: sql-write
+    tools: [execute_sql, sql_execute]
+    when: "statement_type in ['INSERT', 'UPDATE', 'DELETE', 'MERGE', 'ALTER', 'DROP', 'CREATE']"
+    action: require_approval
+    risk: critical
+  - id: shell
+    tools: [shell, bash, execute_command]
+    action: require_approval
+    risk: high
+  - id: mcp-write
+    tools: ['mcp:*']
+    when: "operation == 'write'"
+    action: require_approval
+    risk: high
+  - id: github-pr
+    tools: [create_pull_request, push_files, merge_pull_request]
+    action: require_approval
+    risk: high
