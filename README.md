@@ -2,6 +2,15 @@
 
 [Deep Agents](https://github.com/langchain-ai/deepagents) is a simple, open source agent harness that implements a few generally useful tools, including planning (prior to task execution), computer access (giving the able access to a shell and a filesystem), and sub-agent delegation (isolated task execution). This is a UI for interacting with deepagents.
 
+## Team authentication
+
+Managed deployment mode includes PostgreSQL-backed accounts and sessions,
+Argon2id password hashing, role-based access, login throttling, user
+administration, audit logging, and per-user LangGraph thread isolation.
+
+See [docs/authentication.md](docs/authentication.md) for database bootstrap,
+first-administrator creation, local startup, and production requirements.
+
 ## 🚀 Quickstart
 
 **Install dependencies and run the app**

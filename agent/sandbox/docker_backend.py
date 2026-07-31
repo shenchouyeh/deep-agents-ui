@@ -18,7 +18,10 @@ class RestrictedDockerSandboxBackend(FilesystemBackend, SandboxBackendProtocol):
         super().__init__(root_dir=root_dir)
         self._image = os.getenv("SANDBOX_IMAGE", "deep-agents-sandbox:local")
         self._timeout = int(os.getenv("SANDBOX_TIMEOUT_SECONDS", "30"))
-        self._client = docker.from_env()
+        # Connect lazily so the graph can still start for normal chat and file
+        # operations when Docker Desktop is not installed or not running.
+        # Shell execution remains fail-closed until Docker becomes available.
+        self._client: docker.DockerClient | None = None
 
     @property
     def id(self) -> str:
@@ -28,6 +31,20 @@ class RestrictedDockerSandboxBackend(FilesystemBackend, SandboxBackendProtocol):
         denied = validate_command(command)
         if denied:
             return ExecuteResponse(output=f"POLICY_DENIED: {denied}", exit_code=126, truncated=False)
+
+        if self._client is None:
+            try:
+                self._client = docker.from_env()
+            except DockerException as exc:
+                return ExecuteResponse(
+                    output=(
+                        "SANDBOX_UNAVAILABLE: Docker is not available. "
+                        f"Start Docker Desktop and build image '{self._image}'. "
+                        f"Details: {exc}"
+                    ),
+                    exit_code=125,
+                    truncated=False,
+                )
 
         limit = min(timeout or self._timeout, self._timeout)
         container = None
